@@ -38,6 +38,9 @@ app.get('/', routes.index);
 app.get('/partials/:name', routes.partials);
 
 // JSON API
+// Get environment configuration
+app.get('/api/environment/:id', api.environment);
+
 // Get all tests
 app.get('/api/tests/:environment', api.tests);
 // Get single test

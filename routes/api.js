@@ -9,6 +9,7 @@ var _ = require('underscore');
 // For this example, "data" acts like an in-memory "database"
 var data = {};
 data.production = {
+  id: 3,
   name: "Production",
   version: "2.5",
   tests: [{
@@ -41,6 +42,7 @@ data.production = {
 };
 
 data.staging = {
+  id: 2,
   name: "Staging",
   version: "2.5",
   tests: [{
@@ -67,6 +69,7 @@ data.staging = {
 };
 
 data.development = {
+  id: 1,
   name: "Development",
   version: "2.5",
   tests: [{
@@ -93,6 +96,15 @@ exports.test = function(req, res) {
         res.json(test);
       }
     });
+  });
+};
+
+exports.environment = function(req, res) {
+  var id = req.params.id;
+  _.each(data, function(env){
+      if(env.id == id){
+        res.json(env);
+      }
   });
 };
 

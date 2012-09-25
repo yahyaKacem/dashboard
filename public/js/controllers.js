@@ -26,6 +26,14 @@ function TestCtrl($scope, $http, $routeParams) {
   });
 }
 
+function EnvCtrl($scope, $http, $routeParams) {
+  $http.get('/api/environment/' + $routeParams.id).
+  success(function(data) {
+    console.log(data);
+    $scope.environment = data;
+  });
+}
+
 function AddPostCtrl($scope, $http, $location) {
   $scope.form = {};
   $scope.submitPost = function() {

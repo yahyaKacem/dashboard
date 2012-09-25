@@ -1,10 +1,13 @@
 .row-fluid
   .span4(ng-repeat='environment in environments')
     h2 {{environment.name}}
+      small  
+        a(href='#/environment/{{environment.id}}')  v{{environment.version}}
+    hr
     table.table.table-hover
       thead
         tr
-          td Test Name
+          td Name
           td Last Ran
           td Status
       tbody

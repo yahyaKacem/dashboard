@@ -13,6 +13,10 @@ config(['$routeProvider', '$locationProvider', function($routeProvider, $locatio
     templateUrl: 'partials/test',
     controller: TestCtrl
   }).
+  when('/environment/:id', {
+    templateUrl: 'partials/environment',
+    controller: EnvCtrl
+  }).
   otherwise({
     redirectTo: '/'
   });
