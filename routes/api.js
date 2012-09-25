@@ -1,59 +1,109 @@
+var _ = require('underscore');
+
+
 /*
  * Serve JSON to our AngularJS client
  */
 
 // For a real app, you'd make database requests here.
 // For this example, "data" acts like an in-memory "database"
-var data = {
-  "posts": [
-    {
-      "title": "Lorem ipsum",
-      "text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-    },
-    {
-      "title": "Sed egestas",
-      "text": "Sed egestas, ante et vulputate volutpat, eros pede semper est, vitae luctus metus libero eu augue. Morbi purus libero, faucibus adipiscing, commodo quis, gravida id, est. Sed lectus."
-    }
-  ]
+var data = {};
+data.production = {
+  name: "Production",
+  version: "2.5",
+  tests: [{
+    name: 'Test 1',
+    id: 1,
+    status: 'pass',
+    timestamp: 'September 24, 2012 23:48',
+    timeAgo: '30 minutes ago'
+  }, {
+    name: "Test 2",
+    id: 2,
+    status: 'fail',
+    timestamp: 'September 24, 2012 23:48',
+    timeAgo: '15 minutes ago'
+  }, {
+    name: 'Test 3',
+    id: 3,
+    reason: 'Host unreachable',
+    status: 'warning',
+    timestamp: 'September 24, 2012 23:48',
+    timeAgo: '30 minutes ago'
+  }, {
+    name: 'Test 4',
+    id: 4,
+    status: 'pass',
+    reason: 'Host unreachable',
+    timestamp: 'September 24, 2012 23:48',
+    timeAgo: '30 minutes ago'
+  }]
 };
+
+data.staging = {
+  name: "Staging",
+  version: "2.5",
+  tests: [{
+    name: 'Test 5',
+    id: 5,
+    status: 'pass',
+    timestamp: 'September 24, 2012 23:48',
+    timeAgo: '30 minutes ago'
+  }, {
+    name: 'Test 6',
+    id: 6,
+    reason: 'Host unreachable',
+    status: 'fail',
+    timestamp: 'September 24, 2012 23:48',
+    timeAgo: '30 minutes ago'
+  }, {
+    name: 'Test 7',
+    id: 7,
+    status: 'fail',
+    reason: 'Host unreachable',
+    timestamp: 'September 24, 2012 23:48',
+    timeAgo: '30 minutes ago'
+  }]
+};
+
+data.development = {
+  name: "Development",
+  version: "2.5",
+  tests: [{
+    name: 'Test 8',
+    id: 8,
+    status: 'pass',
+    reason: 'Host unreachable',
+    timestamp: 'September 24, 2012 23:48',
+    timeAgo: '30 minutes ago'
+  }]
+}
 
 // GET
+exports.tests = function(req, res) {
+    var environment = req.params.environment;
+    res.json(data[environment])
+  };
 
-exports.posts = function (req, res) {
-  var posts = [];
-  data.posts.forEach(function (post, i) {
-    posts.push({
-      id: i,
-      title: post.title,
-      text: post.text.substr(0, 50) + '...'
-    });
-  });
-  res.json({
-    posts: posts
-  });
-};
-
-exports.post = function (req, res) {
+exports.test = function(req, res) {
   var id = req.params.id;
-  if (id >= 0 && id < data.posts.length) {
-    res.json({
-      post: data.posts[id]
+  _.each(data, function(env){
+    _.each(env.tests,function(test){
+      if(test.id == id){
+        res.json(test);
+      }
     });
-  } else {
-    res.json(false);
-  }
+  });
 };
 
 // POST
-
-exports.addPost = function (req, res) {
+exports.addPost = function(req, res) {
   data.posts.push(req.body);
   res.json(req.body);
 };
 
 // PUT
-
-exports.editPost = function (req, res) {
+exports.editPost = function(req, res) {
   var id = req.params.id;
 
   if (id >= 0 && id < data.posts.length) {
@@ -65,8 +115,7 @@ exports.editPost = function (req, res) {
 };
 
 // DELETE
-
-exports.deletePost = function (req, res) {
+exports.deletePost = function(req, res) {
   var id = req.params.id;
 
   if (id >= 0 && id < data.posts.length) {

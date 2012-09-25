@@ -1,9 +1,28 @@
-p There are {{posts.length}} posts
-div(ng-repeat='post in posts')
-  h3 {{post.title}}
-  div {{post.text}}
-  a(href='/readPost/{{post.id}}') More
-  |  - 
-  a(href='/editPost/{{post.id}}') Edit
-  |  - 
-  a(href='/deletePost/{{post.id}}') Delete
+.row-fluid
+  .span4(ng-repeat='environment in environments')
+    h2 {{environment.name}}
+    table.table.table-hover
+      thead
+        tr
+          td Test Name
+          td Last Ran
+          td Status
+      tbody
+        tr.error(ng-click='modifyTest(test)', ng-repeat='test in environment.tests | filter:{status:"fail"}')
+          td
+            strong
+              | {{test.name}}
+              strong
+          td {{test.timeAgo}}
+          td {{test.reason}}
+        tr.warning(ng-click='modifyTest(test)', ng-repeat='test in environment.tests | filter:{status:\'warning\'}')
+          td
+            strong
+              | {{test.name}}
+              strong
+          td {{test.timeAgo}}
+          td {{test.reason}}
+        tr.success(ng-click='modifyTest(test)', ng-repeat='test in environment.tests | filter:{status:\'pass\'}')
+          td {{test.name}}
+          td {{test.timeAgo}}
+          td {{test.reason}}

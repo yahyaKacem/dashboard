@@ -1,10 +1,10 @@
 !!!
-html(ng-app="myApp")
+html(ng-app="dashboard")
   head
     meta(charset='utf8')
     base(href='/')
     title Angular Express Seed App
     link(rel='stylesheet', href='/css/bootstrap.min.css')
     link(rel='stylesheet', href='/css/app.css')
-  body.container-fluid
+  body.container-fluid(ng-controller="IndexCtrl")
     block body
