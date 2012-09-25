@@ -1,4 +1,6 @@
 var _ = require('underscore');
+var mysql = require('mysql');
+
 
 
 /*
@@ -84,15 +86,45 @@ data.development = {
 
 // GET
 exports.tests = function(req, res) {
-    var environment = req.params.environment;
-    res.json(data[environment])
-  };
+  var connection = mysql.createConnection({
+    multipleStatements: true,
+    host: '127.0.0.1',
+    port: '3304',
+    database: 'dbRio_02',
+    user: 'rio',
+    password: 'rio'
+  });
+  var environment = req.params.environment;
+  var environmentSql = "select * from tbDashboardEnvironment where name = '" + environment+"'";
+  var testSql = "select test.pkTestId as id, test.name, test.description, env.name as environment, test.repeatEvery, test.firstSeen, test.lastSeen, test.threshold, status.status, status.reason, max(status.timestamp) as timestamp from tbDashboardTest test inner join tbDashboardStatus status on test.pkTestId = status.fkTestId inner join tbDashboardEnvironment env on test.fkEnvId = env.pkEnvId where env.name = '" + environment + "' group by test.pkTestId";
+  connection.connect();
+  connection.query(environmentSql + ";"+ testSql, function(err, rows, fields) {
+    var tests = rows[1] || [];
+    if (err) throw err;
+    if (rows.length > 0) {
+      console.log('--------    Environment       --------------');
+      console.log(rows[0]);
+      console.log('--------    Tests       --------------');
+      console.log(rows[1]);
+      console.log('--------------------------------------');
+      var env = {
+        name: rows[0][0].name,
+        id: rows[0][0].pkEnvId,
+        version: rows[0][0].version,
+        tests: tests
+      }
+    } 
+    res.json(env);
+  });
+  connection.end();
+};
 
 exports.test = function(req, res) {
   var id = req.params.id;
-  _.each(data, function(env){
-    _.each(env.tests,function(test){
-      if(test.id == id){
+  var sql = "select test.pkTestId as id, test.name, test.description, env.name as environment, test.repeatEvery, test.firstSeen, test.lastSeen, test.threshold, status.status, status.reason, status.timestamp from tbDashboardTest test inner join tbDashboardStatus status on test.pkTestId = status.fkTestId and status.timestamp = (select max(timestamp) from tbDashboardStatus where fkTestId = " + id + ") inner join tbDashboardEnvironment env on test.fkEnvId = env.pkEnvId";
+  _.each(data, function(env) {
+    _.each(env.tests, function(test) {
+      if (test.id == id) {
         res.json(test);
       }
     });
@@ -101,10 +133,10 @@ exports.test = function(req, res) {
 
 exports.environment = function(req, res) {
   var id = req.params.id;
-  _.each(data, function(env){
-      if(env.id == id){
-        res.json(env);
-      }
+  _.each(data, function(env) {
+    if (env.id == id) {
+      res.json(env);
+    }
   });
 };
 

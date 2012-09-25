@@ -9,6 +9,7 @@ function IndexCtrl($scope, $http) {
   _.each(environments, function(environment) {
     $http.get('/api/tests/'+environment).
     success(function(data, status, headers, config) {
+      console.log(data);
       $scope.environments.push(data);
     });
   });
